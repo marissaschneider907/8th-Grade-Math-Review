@@ -1,0 +1,146 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Math Mission • Grade 8 Review</title><style>
+:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#19243b;background:#eef3fa}*{box-sizing:border-box}body{margin:0}.wrap{max-width:1050px;margin:auto;padding:20px}header{background:linear-gradient(120deg,#17325b,#315c98);color:white;padding:24px;border-radius:20px;margin-bottom:16px}h1{margin:0 0 7px;font-size:clamp(25px,4vw,38px)}.muted{opacity:.85}.panel{background:white;border-radius:18px;padding:22px;box-shadow:0 3px 16px #19243b12;margin:14px 0}button,select{font:inherit}button{cursor:pointer;border:0;border-radius:11px;padding:12px 17px;background:#245db2;color:white;font-weight:700}button:hover{filter:brightness(1.09)}button:focus-visible,.choice:focus-visible{outline:3px solid #ed9d1b;outline-offset:2px}.secondary{background:#e7eef9;color:#163f7d}.green{background:#167450}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}.topic{background:#f1f5fd;border:2px solid #dae5f5;border-radius:15px;padding:15px}.topic h3{margin:0 0 7px}.small{font-size:.92rem;color:#52647e}.bar{height:12px;background:#e1e9f4;border-radius:30px;overflow:hidden}.fill{height:100%;background:#2d8b74;width:0;transition:width .3s}.choices{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:17px}.choice{text-align:left;background:#f4f7fd;color:#1c2c48;border:2px solid #d8e2f2;min-height:62px;font-weight:600}.choice:hover{background:#e5efff}.choice.selected{border-color:#245db2;background:#dceafe}.choice.correct{border-color:#18865d;background:#d8f7e8}.choice.wrong{border-color:#c74444;background:#ffe6e6}.choice:disabled{cursor:default}.pill{display:inline-block;background:#e6edfa;color:#1d4c91;border-radius:40px;padding:6px 11px;font-size:.85rem;font-weight:700;margin-right:7px}.feedback{margin-top:17px;padding:16px;border-left:5px solid #237d63;background:#e9f7f0;border-radius:9px;line-height:1.6}.feedback.bad{border-color:#b54a3c;background:#fff1eb}.visual{display:flex;justify-content:center;align-items:center;margin:14px 0;background:#f6f9fe;border-radius:14px;padding:12px;min-height:110px}.visual svg{max-width:100%;height:auto}.question{font-size:clamp(20px,2.8vw,27px);font-weight:750;line-height:1.4;margin-top:18px}.math{font-family:Cambria,'Times New Roman',serif;font-size:1.2em}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:space-between}.hidden{display:none!important}.footer{font-size:.9rem;color:#4b5d75;line-height:1.5}.check{display:flex;gap:8px;align-items:center}.report{border-collapse:collapse;width:100%}.report td,.report th{border-bottom:1px solid #e3eaf5;text-align:left;padding:9px}.report th{background:#f1f5fb}@media(max-width:650px){.choices{grid-template-columns:1fr}.wrap{padding:10px}.panel{padding:15px}}@media print{header,.controls,button{display:none!important}.panel{box-shadow:none;border:1px solid #ddd}}
+</style></head><body><div class="wrap"><header><h1>🧭 Math Mission: Grade 8 Review</h1><div class="muted">AK STAR–style multiple-choice practice • diagrams • explanations • learn from mistakes</div></header>
+<section id="home" class="panel"><h2>Choose your mission</h2><p>Practice one skill at a time or try a mixed review. Every question has four answer choices and a worked explanation after you submit.</p><div class="grid" id="topics"></div><div class="panel" style="background:#f3f7ff"><h3>Test-taking habits</h3><p>① Read carefully. ② Sketch or underline important information. ③ Solve on paper <strong>before</strong> choosing. ④ Check units and eliminate unreasonable choices. ⑤ Learn from feedback.</p><label class="check"><input type="checkbox" id="shuffle" checked> Shuffle questions in each mission</label><label class="check" style="margin-top:12px"><input type="checkbox" id="repeat" checked> <strong>Repetition practice:</strong> 3 rounds with fresh questions when available; missed questions return for extra practice</label><p class="small">Each round draws different problems from the skill bank when available. Questions and answer positions shuffle every session. Missed questions return for extra practice.</p></div><div class="row"><button onclick="start('mixed')">🚀 Start mixed review (24 per round)</button><button class="secondary" onclick="start('all')">Practice every question</button></div><p class="footer">This is original practice inspired by the multiple-choice format of standardized assessments, not official AK STAR test material. No student data is transmitted or saved.</p></section>
+<section id="quiz" class="panel hidden"><div class="row"><div><span id="tag" class="pill"></span><span id="counter" class="pill"></span></div><button class="secondary" onclick="confirmExit()">← Missions</button></div><div class="bar" style="margin-top:14px"><div class="fill" id="progress"></div></div><div id="visual" class="visual"></div><div class="question" id="prompt"></div><div class="choices" id="choices"></div><div id="feedback" class="feedback hidden" aria-live="polite"></div><div class="row controls" style="margin-top:17px"><span class="small">Work it out in your notebook or on paper first.</span><div><button id="submit" onclick="submitAnswer()" disabled>Check answer</button> <button id="next" class="green hidden" onclick="nextQuestion()">Next question →</button></div></div></section>
+<section id="end" class="panel hidden"><h2>🎉 Mission complete!</h2><div id="result"></div><div id="breakdown"></div><div class="row" style="margin-top:18px"><button onclick="start('missed')" id="retry">Retry missed questions</button><button class="secondary" onclick="showHome()">Choose another mission</button><button class="secondary" onclick="window.print()">Print results</button></div></section>
+</div><script>
+const defs=[['exponents','Operations with Exponents','Multiply and divide powers with the same base; power of a power.'],['roots','Square Roots & Perfect Squares','Connect square roots to squares.'],['distribute','Distributive Property','Multiply a factor by each term inside parentheses.'],['terms','Combining Like Terms','Combine terms with the same variable and exponent.'],['rectangle','Rectangles & Squares','Use dimensions and square units.'],['trapezoid','Trapezoids','Average parallel bases, then multiply by height.'],['triangle','Triangle Area','Identify perpendicular height and find area.'],['missing','Missing Triangle Dimensions','Work backward from area to base or height.']];
+const Q=[];function add(cat,p,choices,a,ex,vis=''){Q.push({cat,p,choices,a,ex,vis,id:Q.length})}
+const math=s=>`<span class="math">${s}</span>`;
+function diagram(shape,labels){const text=(x,y,s)=>`<text x="${x}" y="${y}" text-anchor="middle" font-size="16" fill="#183c70" font-weight="700">${s}</text>`;let body='';if(shape==='rect')body=`<rect x="80" y="30" width="230" height="120" fill="#d8e9ff" stroke="#2864a4" stroke-width="3"/>${text(195,172,labels[0])}${text(55,94,labels[1])}`;if(shape==='square')body=`<rect x="115" y="25" width="145" height="145" fill="#d8e9ff" stroke="#2864a4" stroke-width="3"/>${text(190,190,labels[0])}`;if(shape==='trap')body=`<polygon points="145,35 270,35 325,155 65,155" fill="#d8e9ff" stroke="#2864a4" stroke-width="3"/>${text(207,25,labels[0])}${text(195,181,labels[1])}<line x1="155" y1="35" x2="155" y2="155" stroke="#e1841a" stroke-width="3" stroke-dasharray="7 5"/><path d="M155 142 h13 v13" fill="none" stroke="#e1841a" stroke-width="2"/>${text(132,103,labels[2])}`;if(shape==='tri')body=`<polygon points="70,155 320,155 220,35" fill="#d8e9ff" stroke="#2864a4" stroke-width="3"/>${text(195,180,labels[0])}<line x1="220" y1="35" x2="220" y2="155" stroke="#e1841a" stroke-width="3" stroke-dasharray="7 5"/><path d="M220 143 h12 v12" fill="none" stroke="#e1841a" stroke-width="2"/>${text(243,95,labels[1])}`;if(shape==='obtuse')body=`<polygon points="100,155 295,155 55,40" fill="#d8e9ff" stroke="#2864a4" stroke-width="3"/>${text(198,181,labels[0])}<line x1="55" y1="40" x2="55" y2="155" stroke="#e1841a" stroke-width="3" stroke-dasharray="7 5"/><line x1="55" y1="155" x2="100" y2="155" stroke="#e1841a" stroke-width="2" stroke-dasharray="5 5"/><path d="M55 143 h12 v12" fill="none" stroke="#e1841a" stroke-width="2"/>${text(32,99,labels[1])}`;return `<svg viewBox="0 0 390 205" width="390" role="img" aria-label="${shape} diagram with labeled dimensions"><title>${shape} diagram: ${labels.join(', ')}</title>${body}</svg>`}
+add('exponents',`Simplify ${math('2³(2⁴)')}.`,['2⁷','2¹²','4⁷','2¹'],0,'When multiplying powers with the same base, add exponents: 2³(2⁴) = 2⁷.');
+add('exponents',`Simplify ${math('5⁶ ÷ 5²')}.`,['5³','5⁴','1⁴','25⁴'],1,'When dividing powers with the same nonzero base, subtract exponents: 5⁶ ÷ 5² = 5⁴.');
+add('exponents',`Simplify ${math('(3²)³')}.`,['3⁵','3⁶','9³²','3⁹'],1,'A power raised to a power means multiply the exponents: (3²)³ = 3⁶.');
+add('exponents',`Which expression equals ${math('4⁵')}?`,['4²(4³)','4² + 4³','4⁵(4⁵)','4⁵ ÷ 4⁵'],0,'4²(4³) = 4²⁺³ = 4⁵. Adding powers does not follow this exponent rule.');
+add('roots',`What is ${math('√81')}?`,['8','9','±9','40.5'],1,'The principal square root is the nonnegative number whose square is 81. Since 9² = 81, √81 = 9.');
+add('roots',`Which number is a perfect square?`,['45','64','72','98'],1,'64 is a perfect square because 8² = 64.');
+add('roots',`Between which consecutive whole numbers is ${math('√50')}?`,['5 and 6','6 and 7','7 and 8','8 and 9'],2,'7² = 49 and 8² = 64. Since 50 is between 49 and 64, √50 is between 7 and 8.');
+add('roots',`A square has an area of 121 cm². How long is one side?`,['11 cm','60.5 cm','22 cm','12 cm'],0,'For a square, area = side². The side length is √121 = 11 cm.',diagram('square',['area = 121 cm²']));
+add('distribute',`Simplify ${math('3(x + 4)')}.`,['3x + 4','3x + 12','x + 12','7x'],1,'Multiply 3 by each term: 3(x + 4) = 3x + 12.');
+add('distribute',`Simplify ${math('−2(3y − 5)')}.`,['−6y − 10','6y + 10','−6y + 10','−6y + 5'],2,'Distribute −2 to both terms: −2(3y) = −6y and −2(−5) = +10.');
+add('distribute',`Which is equivalent to ${math('4(2a + 3) − 5')}?`,['8a + 7','8a + 12','6a + 7','8a − 2'],0,'Distribute first: 8a + 12 − 5. Combine constants to get 8a + 7.');
+add('distribute',`A student writes ${math('5(x + 2) = 5x + 2')}. What did they forget?`,['To add 5 to x','To multiply the 2 by 5','To square x','Nothing; it is correct'],1,'The 5 must multiply both terms inside parentheses, giving 5x + 10.');
+add('terms',`Simplify ${math('4x + 7x − 3')}.`,['11x − 3','8x','11x + 3','4x + 4'],0,'Combine like x-terms: 4x + 7x = 11x. The constant −3 stays separate.');
+add('terms',`Simplify ${math('6a − 2 + 3a + 5')}.`,['9a + 3','9a − 7','14a','3a + 3'],0,'Combine variable terms (6a + 3a) and constants (−2 + 5) to get 9a + 3.');
+add('terms',`Which pair contains like terms?`,['3x and 3y','5x and 5x²','−2m and 7m','4 and 4n'],2,'Like terms have identical variable parts and exponents. −2m and 7m are like terms.');
+add('terms',`Simplify ${math('2(3x + 1) + 4x')}.`,['10x + 2','6x + 5','10x + 1','14x'],0,'Distribute first: 6x + 2 + 4x. Combine like terms: 10x + 2.');
+add('rectangle',`Find the area of the rectangle.`,['26 cm²','40 cm²','80 cm²','20 cm²'],1,'Area of a rectangle = length (width) = 8(5) = 40 cm².',diagram('rect',['8 cm','5 cm']));
+add('rectangle',`Find the area of a square with side length 7 ft.`,['14 ft²','28 ft²','49 ft²','21 ft²'],2,'A square has equal sides, so A = 7(7) = 49 ft².',diagram('square',['7 ft']));
+add('rectangle',`A rectangle has area 72 m² and width 8 m. Find its length.`,['9 m','64 m','18 m','576 m'],0,'A = length(width). Solve 72 = length(8), so length = 72 ÷ 8 = 9 m.',diagram('rect',['?','8 m']));
+add('rectangle',`A 6-ft by 4-ft rectangular mat is covered by 1-ft² tiles. How many tiles are needed?`,['10','20','24','48'],2,'The mat area is 6(4) = 24 ft², so 24 one-square-foot tiles are needed.',diagram('rect',['6 ft','4 ft']));
+add('trapezoid',`Find the area of the trapezoid.`,['48 cm²','96 cm²','60 cm²','24 cm²'],0,'A = ½(b₁ + b₂)(h) = ½(6 + 10)(6) = 48 cm².',diagram('trap',['6 cm','10 cm','6 cm']));
+add('trapezoid',`A trapezoid has parallel bases 8 ft and 14 ft, and height 5 ft. Find its area.`,['110 ft²','55 ft²','35 ft²','27 ft²'],1,'Add the parallel bases, halve the sum, then multiply by perpendicular height: ½(8 + 14)(5) = 55 ft².',diagram('trap',['8 ft','14 ft','5 ft']));
+add('trapezoid',`Which measurement must be perpendicular to the parallel bases?`,['Either slanted side','The height','The longer base','The perimeter'],1,'Height is the shortest perpendicular distance between the two parallel bases.',diagram('trap',['top base','bottom base','height']));
+add('trapezoid',`A trapezoid has bases 5 m and 9 m and area 42 m². Find its height.`,['3 m','6 m','7 m','12 m'],1,'42 = ½(5 + 9)(h) = 7h, so h = 6 m.',diagram('trap',['5 m','9 m','?']));
+add('triangle',`Find the area of the triangle.`,['60 cm²','30 cm²','16 cm²','32 cm²'],1,'A = ½(b)(h) = ½(10)(6) = 30 cm².',diagram('tri',['10 cm','6 cm']));
+add('triangle',`Find the area of this obtuse triangle. The dashed segment is the perpendicular height.`,['24 ft²','48 ft²','18 ft²','12 ft²'],0,'The perpendicular height may fall outside an obtuse triangle. A = ½(8)(6) = 24 ft².',diagram('obtuse',['8 ft','6 ft']));
+add('triangle',`Why is a slanted side not automatically the height of a triangle?`,['The height must be perpendicular to the chosen base','Slanted sides are always shorter','Only vertical lines can be heights','Triangles never have slanted sides'],0,'Height must make a 90° angle with the line containing the chosen base. A slanted side only works as a height if it is perpendicular to that base.',diagram('tri',['base','height']));
+add('triangle',`A triangle and rectangle have the same base (12 cm) and perpendicular height (4 cm). How do their areas compare?`,['They are equal','Triangle is twice the rectangle','Triangle is half the rectangle','Triangle is 4 cm² smaller'],2,'Rectangle area = 12(4) = 48 cm². Triangle area = ½(12)(4) = 24 cm², half as much.',diagram('tri',['12 cm','4 cm']));
+add('missing',`A triangle has area 36 cm² and base 9 cm. Find its perpendicular height.`,['4 cm','8 cm','18 cm','27 cm'],1,'36 = ½(9)(h). Double the area: 72 = 9h. Divide by 9: h = 8 cm.',diagram('tri',['9 cm','?']));
+add('missing',`A triangle has area 45 ft² and perpendicular height 10 ft. Find its base.`,['4.5 ft','9 ft','18 ft','35 ft'],1,'45 = ½(b)(10) = 5b. Divide 45 by 5: b = 9 ft.',diagram('tri',['?','10 ft']));
+add('missing',`A triangular fabric decoration has area 48 ft² and base 12 ft. How tall must it be?`,['4 ft','6 ft','8 ft','12 ft'],2,'48 = ½(12)(h) = 6h, so h = 8 ft. Check: ½(12)(8) = 48 ft².',diagram('tri',['12 ft','?']));
+add('missing',`Two triangles each have area 30 cm². Triangle A has base 10 cm; Triangle B has base 5 cm. Which statement is true?`,['Their heights must be equal','Triangle B has twice the height of Triangle A','Triangle A has twice the height of Triangle B','Triangle B has half the area'],1,'For the same area, halving the base doubles the perpendicular height. A: h = 60 ÷ 10 = 6 cm. B: h = 60 ÷ 5 = 12 cm.');
+
+// Additional original question variants. Every new mission reshuffles both questions and answer positions.
+function addNumeric(cat,p,answer,distractors,ex,vis=''){
+ const vals=[answer,...distractors].map(String);
+ if(new Set(vals).size!==4) return;
+ add(cat,p,vals,0,ex,vis);
+}
+for(const [b,m,n] of [[2,3,5],[3,2,4],[4,2,3],[5,3,2],[6,2,5],[7,2,3],[3,4,2],[2,5,2]]){
+ addNumeric('exponents',`Simplify ${math(`${b}<sup>${m}</sup>(${b}<sup>${n}</sup>)`)}.`,
+ `${b}<sup>${m+n}</sup>`,[`${b}<sup>${m*n}</sup>`,`${b}<sup>${Math.max(m,n)}</sup>`,`${b*2}<sup>${m+n}</sup>`],
+ `When multiplying powers with the same base, add exponents: ${m} + ${n} = ${m+n}.`);
+}
+for(const [b,m,n] of [[2,8,3],[3,7,2],[4,6,4],[5,6,2]]){
+ addNumeric('exponents',`Simplify ${math(`${b}<sup>${m}</sup> ÷ ${b}<sup>${n}</sup>`)}.`,
+ `${b}<sup>${m-n}</sup>`,[`${b}<sup>${m+n}</sup>`,`${b}<sup>${m*n}</sup>`,`${b}<sup>${n}</sup>`],
+ `Divide powers with the same nonzero base by subtracting exponents: ${m} − ${n} = ${m-n}.`);
+}
+for(const n of [36,49,100,144,169,196,225,256,289,324,361,400]){
+ const root=Math.sqrt(n);
+ addNumeric('roots',`What is the principal square root of ${math(`√${n}`)}?`,root,[root-1,root+1,n/2],
+ `The principal square root is nonnegative. ${root}<sup>2</sup> = ${n}, so √${n} = ${root}.`);
+}
+for(const [a,b,c] of [[2,3,5],[3,4,2],[4,2,7],[5,3,4],[6,2,5],[3,5,6],[7,2,3],[4,6,2],[8,2,4],[5,4,3]]){
+ const ans=a*b+a*c;
+ addNumeric('distribute',`Simplify ${math(`${a}(${b}x + ${c})`)}.`,
+ `${a*b}x + ${a*c}`, [`${a*b}x + ${c}`,`${a+b}x + ${a*c}`,`${a*b}x + ${a*c+a}`],
+ `Multiply ${a} by both terms: ${a}(${b}x) + ${a}(${c}) = ${a*b}x + ${a*c}.`);
+}
+for(const [a,b,c] of [[2,5,3],[3,6,4],[4,7,2],[5,4,6],[6,3,5],[7,5,4],[8,2,3],[4,9,5],[3,8,7],[5,7,2]]){
+ addNumeric('terms',`Simplify ${math(`${a}x + ${b}x − ${c}`)}.`,
+ `${a+b}x − ${c}`,[`${a*b}x − ${c}`,`${a+b-c}x`,`${a+b}x + ${c}`],
+ `Add the coefficients of the like terms: ${a}x + ${b}x = ${a+b}x. Keep the constant −${c} separate.`);
+}
+for(const [b,h] of [[8,5],[9,4],[12,6],[7,8],[11,3],[14,5],[15,4],[16,7]]){
+ const area=b*h;
+ addNumeric('rectangle',`What is the area of this rectangle?`,`${area} cm²`,
+ [`${2*(b+h)} cm²`,`${b+h} cm²`,`${area/2} cm²`],
+ `Rectangle area = length (width) = ${b}(${h}) = ${area} cm².`,diagram('rect',[`${b} cm`,`${h} cm`]));
+}
+for(const side of [5,7,9,11,13,15]){
+ addNumeric('rectangle',`What is the area of a square with side length ${side} m?`,`${side*side} m²`,
+ [`${4*side} m²`,`${side*2} m²`,`${side*side+side} m²`],
+ `Square area = side (side) = ${side}(${side}) = ${side*side} m².`,diagram('square',[`${side} m`]));
+}
+for(const [b1,b2,h] of [[6,10,4],[8,14,6],[5,13,8],[10,18,5],[7,15,4],[12,20,3],[9,17,6],[4,12,7],[6,18,5],[11,19,4]]){
+ const area=(b1+b2)*h/2;
+ addNumeric('trapezoid',`Find the area of this trapezoid.`,`${area} cm²`,
+ [`${(b1+b2)*h} cm²`,`${b1*h} cm²`,`${b2*h} cm²`],
+ `Average the two parallel bases, then multiply by the perpendicular height: (${b1} + ${b2})(${h}) ÷ 2 = ${area} cm².`,
+ diagram('trap',[`${b1} cm`,`${b2} cm`,`${h} cm`]));
+}
+for(const [b,h] of [[8,7],[10,9],[12,5],[14,6],[16,7],[9,8],[18,4],[20,3],[6,11],[15,8]]){
+ const area=b*h/2;
+ addNumeric('triangle',`Find the area of this triangle.`,`${area} cm²`,
+ [`${b*h} cm²`,`${b+h} cm²`,`${area+h} cm²`],
+ `Triangle area = ½(base)(perpendicular height) = ½(${b})(${h}) = ${area} cm².`,
+ diagram('tri',[`${b} cm`,`${h} cm`]));
+}
+for(const [b,h] of [[8,7],[10,9],[12,5],[14,6],[16,7],[9,8],[18,4],[20,3],[6,11],[15,8]]){
+ const area=b*h/2;
+ addNumeric('missing',`The area is ${area} cm² and the base is ${b} cm. What is the perpendicular height?`,`${h} cm`,
+ [`${h*2} cm`,`${area/b} cm`,`${h+b} cm`],
+ `Start with A = ½(b)(h). Double the area and divide by the base: h = 2(${area}) ÷ ${b} = ${h} cm. Check with the area formula.`,
+ diagram('tri',[`${b} cm`,'?']));
+ addNumeric('missing',`The area is ${area} cm² and the perpendicular height is ${h} cm. What is the base?`,`${b} cm`,
+ [`${b*2} cm`,`${area/h} cm`,`${b+h} cm`],
+ `Double the area and divide by the height: b = 2(${area}) ÷ ${h} = ${b} cm. Check: ½(${b})(${h}) = ${area} cm².`,
+ diagram('tri',['?',`${h} cm`]));
+}
+
+const topicEl=document.getElementById('topics');defs.forEach(([id,name,desc])=>{let d=document.createElement('div');d.className='topic';d.innerHTML=`<h3>${name}</h3><p class="small">${desc}</p><p class="small">A larger bank of varied questions • shuffled every session</p><button class="secondary">Practice this skill →</button>`;d.querySelector('button').onclick=()=>start(id);topicEl.append(d)});
+let active=[],pos=0,selected=null,checked=false,history=[],lastMissed=[],extraQueue=[],roundMode=false;const el=id=>document.getElementById(id);function shuffle(a){let b=[...a];for(let i=b.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
+function start(mode){roundMode=el('repeat').checked;
+const pool=mode==='missed'?lastMissed.map(id=>Q[id]).filter(Boolean):mode==='all'?[...Q]:mode==='mixed'?[...Q]:Q.filter(q=>q.cat===mode);
+const perTopic=mode==='mixed'?3:mode==='all'?null:mode==='missed'?null:6;
+if(roundMode){
+ active=[];
+ const rounds=3;
+ for(let r=0;r<rounds;r++){
+   let selectedRound;
+   if(mode==='mixed'){
+     selectedRound=defs.flatMap(([id])=>{let items=shuffle(pool.filter(q=>q.cat===id));return items.slice((r*3)%Math.max(1,items.length),((r*3)%Math.max(1,items.length))+3)});
+   }else if(perTopic){
+     const items=shuffle(pool);
+     selectedRound=items.slice(0,perTopic);
+     // Avoid reusing questions in adjacent rounds where the bank is large enough.
+     const used=new Set(active.slice(-perTopic).map(q=>q.id));
+     const fresh=items.filter(q=>!used.has(q.id));
+     selectedRound=[...fresh,...items.filter(q=>used.has(q.id))].slice(0,perTopic);
+   }else{
+     selectedRound=shuffle(pool);
+   }
+   active.push(...shuffle(selectedRound).map(q=>({...q,round:r+1})));
+ }
+}else{
+ active=mode==='mixed'?defs.flatMap(([id])=>shuffle(pool.filter(q=>q.cat===id)).slice(0,3)):perTopic?shuffle(pool).slice(0,perTopic):shuffle(pool);
+}
+extraQueue=[];pos=0;history=[];el('home').classList.add('hidden');el('end').classList.add('hidden');el('quiz').classList.remove('hidden');render()}
+function render(){let q=active[pos];selected=null;checked=false;el('tag').textContent=defs.find(x=>x[0]===q.cat)[1];el('counter').textContent=`Question ${pos+1} of ${active.length}${roundMode?' • Repetition round '+(q.round||'extra'):''}`;el('progress').style.width=`${pos/active.length*100}%`;el('visual').innerHTML=q.vis||'<div style="font-size:54px" aria-hidden="true">✏️ 📐</div>';el('prompt').innerHTML=q.p;el('feedback').className='feedback hidden';el('submit').classList.remove('hidden');el('submit').disabled=true;el('next').classList.add('hidden');el('next').textContent=pos===active.length-1?'See results →':'Next question →';let container=el('choices');container.innerHTML='';let order=roundMode?shuffle([0,1,2,3]):[0,1,2,3];q._displayOrder=order;q._correctDisplay=order.indexOf(q.a);order.forEach((original,i)=>{let c=q.choices[original];let b=document.createElement('button');b.className='choice';b.innerHTML=`<strong>${'ABCD'[i]}.</strong> &nbsp; ${c}`;b.onclick=()=>{if(checked)return;selected=i;[...container.children].forEach((node,j)=>node.classList.toggle('selected',i===j));el('submit').disabled=false};container.append(b)})}
+function submitAnswer(){if(selected===null||checked)return;checked=true;let q=active[pos],correct=selected===(q._correctDisplay??q.a);history.push({id:q.id,cat:q.cat,correct});if(roundMode&&!correct&&q.round!=='extra'){extraQueue.push({...q,round:'extra'});}[...el('choices').children].forEach((b,i)=>{b.disabled=true;if(i===(q._correctDisplay??q.a))b.classList.add('correct');else if(i===selected)b.classList.add('wrong')});let f=el('feedback');f.className='feedback'+(correct?'':' bad');f.innerHTML=`<strong>${correct?'✓ Correct!':'Not quite — keep learning.'}</strong><div><strong>Correct choice: ${'ABCD'[q._correctDisplay??q.a]}.</strong> ${q.choices[q.a]}</div><div>${q.ex}</div><p style="margin-bottom:0"><strong>Test-taking tip:</strong> ${correct?'Check your work and units before moving on.':'Compare your work with the explanation. Identify the step to fix.'}</p>`;el('submit').classList.add('hidden');el('next').classList.remove('hidden');el('progress').style.width=`${(pos+1)/active.length*100}%`}
+function nextQuestion(){if(pos<active.length-1){pos++;render()}else if(roundMode&&extraQueue.length){active.push(...extraQueue.splice(0));pos++;render()}else finish()}
+function finish(){el('quiz').classList.add('hidden');el('end').classList.remove('hidden');let n=history.filter(h=>h.correct).length;lastMissed=[...new Set(history.filter(h=>!h.correct).map(h=>h.id))];el('result').innerHTML=`<h3>${n} / ${history.length} correct (${Math.round(100*n/history.length)}%)</h3><p>Repetition helps build fluency. Review any missed skills. A mistake is information about what to practice next—not a judgment about your ability.</p>`;let rows=defs.map(([id,name])=>{let subset=history.filter(h=>h.cat===id);return subset.length?`<tr><td>${name}</td><td>${subset.filter(h=>h.correct).length} / ${subset.length}</td></tr>`:''}).join('');el('breakdown').innerHTML=`<h3>Skill breakdown</h3><table class="report"><thead><tr><th>Skill</th><th>Correct</th></tr></thead><tbody>${rows}</tbody></table>`;el('retry').classList.toggle('hidden',lastMissed.length===0)}function showHome(){el('quiz').classList.add('hidden');el('end').classList.add('hidden');el('home').classList.remove('hidden')}function confirmExit(){if(confirm('Leave this mission? Your current answers will be cleared.'))showHome()}
+</script></body></html>
